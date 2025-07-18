@@ -1,0 +1,126 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container-lg me-3 ms-md-5 mt-5">
+        <h2> Listing: {{ listing.title }}</h2>
+        <div class="row gap-3">
+            <div class="col-md-4">
+                <img src="{{ listing.image }}" alt="{{ listing.image }} Image" class="img-fluid rounded" style="object-fit: cover; width: 100%; max-height: auto;">
+            </div>
+            <div class="col-md-5">
+                <p class="fs-2">{{ listing.description }}</p>
+                <div>
+                    <p class="fs-5">Listed by: <span class="text-primary">{{ listing.owner.username }}</span></p>
+                    <p class="fs-5">Category:
+                        {% if listing.category %}
+                            {{ listing.category }}
+                        {% else %}
+                            No Category Listed
+                        {% endif %}
+                    </p>
+
+                    <p class="fs-6 text-muted">
+                        Date added: {{ listing.added_at }}
+                    </p>
+
+                    <p class="text-success fs-3 fw-bold">
+                        {% if highest_bid %}
+                            $ {{ highest_bid.bid }}
+                        {% else %}
+                            $ {{ listing.starting_bid }}
+                        {% endif %}
+                    </p>
+
+                    {% if listing.is_active %}
+                        <p>
+                        {{ bids.count }} bid(s) so far.
+                        {% if highest_bid %}
+                            {% if highest_bid.user == request.user %}
+                                Your bid is the current bid.
+                            {% else %}
+                                {{ highest_bid.user.username }} 's bid is the current bid.
+                            {% endif %}
+                        {% endif %}
+                        </p>
+                    {% else %}
+                        {% if bids.count == 0 %}
+                            <p class="text-danger">Unsold</p>
+                        {% else %}
+                            <p class="text-success"><span class="text-primary">{{ highest_bid.user.username}}</span> won the auction</p>
+                        {% endif %}
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        {% if not listing.is_active %}
+                            <p class="fs-3 text-danger"> Aunction Ended</p>
+                        {% else %}
+                            {% if request.user == listing.owner %}
+                                    <form action="{% url 'product' listing.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" name="action" value="close_auction" class="btn btn-primary mt-3">End Auction</button>
+                                    </form>
+                            {% else %}
+                                {% for message in messages %}
+                                    {% if message.tags == 'error' %}
+                                        <p class="text-danger">
+                                            {{ message }}
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
+                                <form action="{% url 'product' listing.id %}" method="post" class="d-flex gap-2 ">
+                                    {% csrf_token %}
+
+                                    <input type="number" class="form-control" placeholder="Bid" name="bid" style="max-width: 200px; display: inline-block;">
+                                    <button type="submit" name="action" value="place_bid" class="btn btn-primary">Place Bid</button>
+                                </form>
+                                <form action="{% url 'product' listing.id %}" method="post">
+                                    {% csrf_token %}
+                                    {% if in_watchlist %}
+                                        <button type="submit" name="action" value="toggle_watchlist" class="btn btn-danger mt-3">Remove from Watchlist</button>
+                                    {% else %}
+                                        <button type="submit" name="action" value="toggle_watchlist" class="btn btn-outline-danger mt-3">Add to Watchlist</button>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        {% if not listing.is_active %}
+                            <p class="fs-3 text-danger"> Aunction Ended</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <h3 class="ms-md-3 mt-5">Comments</h3>
+        {% if user.is_authenticated %}
+            <form action="{% url 'product' listing.id %}" method="post" class="ms-md-3">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-8">
+                        <textarea name="user_comment"  class="form-control shadow" placeholder="Enter your comment"></textarea>
+                    </div>
+                    <div class="d-flex  mt-2">
+                        <button type="submit" name="action" value="user_comment" class="btn btn-primary">Comment</button>
+                    </div>
+                </div>
+            </form>
+        {% endif %}
+            <div class="list-group mt-4">
+                {% for comment in comments %}
+                    <div class="list-group-item col-md-8 border rounded shadow-sm ms-md-3 mb-2">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <p class="mb-1"><span class="text-primary me-1">{{comment.user}}:</span> {{ comment.comment }}</p>
+                            </div>
+                            <div class="col-md-3 text-end ms-auto">
+                                <small class="text-muted">{{ comment.added_at| timesince }} ago</small>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted ms-md-3">No comments yet.</p>
+                {% endfor %}
+            </div>
+        
+    </div>
+{% endblock %}

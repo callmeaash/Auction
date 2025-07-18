@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container-lg ms-md-3 mt-3">
+    <h2>Available Categories</h2>
+
+    <div class="list-group col-md-5">
+        {% for category in categories %}
+            {% if category.category and category.category != "" %}
+                <a href="{% url 'specific_category' category.category %}" class="list-group-item list-group-item-action mt-1 rounded shadow">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {{ category.category }}
+                        </div>
+                        <div>
+                            {{ category.count }}
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div> 
+</div>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<div class="container-lg ms-md-3">
+    <h2>
+        Profile
+    </h2>
+    <div class="d-flex flex-md-column">
+        <div class="row gap-3">
+            <div class="col-md-3 d-flex justify-content-center">
+                <img src="https://snapynow.com/wp-content/uploads/2024/05/no-dp-pic_23.webp" alt="User image" class="img-fluid rounded" style="width: auto; max-height: 300px; object-fit: cover;" >
+            </div>
+
+            <div class="col-md-4 mt-md-3 mt-2 ms-4 ms-md-0">
+                <p class="fs-5"> Username: <span class="text-primary fw-bold">{{ request.user.username }}</span></p>
+                <p class="fs-5">Email: {{ request.user.email }}</p>
+                <p class="fs-5">Total Listings: {{total_listings}}</p>
+                <p class="fs-5">Total Bids Won: {{total_bids_won}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <h3 class="mt-5">My Listings</h3>
+        <div class="col-md-6 ms-md-3 mt-3">
+            {% for listing in listings %}
+                <div class="row shadow rounded mb-2 bg-white p-2 gx-3">
+                    <div class="col-auto">
+                        <img src="{{ listing.image }}" class="img-fluid rounded" style="max-width: 150px; max-height: 150px; object-fit: cover;">
+                    </div>
+                    <div class="col">
+                        <div class="d-flex flex-column p-2">
+                            <p class="fw-bold">{{ listing.title }}</p>
+                            {% if listing.is_active %}
+                                <p class="text-success">Active</p>
+                            {% else %}
+                                <p class="text-danger">Ended</p>
+                            {% endif %}
+
+                            {% if listing.is_active %}
+                                <p>Current Bid: <span class="text-success">${{listing.highest_bid}}</span></p>
+                            {% else %}
+                                <p>Winner: <span class="text-primary">{{listing.winner}}</span></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    
+                    <div class=" col-12 col-md-auto mt-2 mt-md-0 d-flex flex-md-column gap-2 justify-content-md-evenly justify-content-end ">
+                        <a href="" class="btn btn-outline-primary">View</a>
+                        <form action="">
+                            {% csrf_token %}
+                            <button type="submit" name="action" value="delete" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

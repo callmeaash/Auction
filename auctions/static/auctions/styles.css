@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Outfit:wght@100..900&display=swap');
+body{
+    margin: 10px;
+}
+
+body, h1, h2, h3, h4, h5, h6 {
+    font-family: "Outfit", sans-serif !important;
+}
+
+.list-group-item + .list-group-item {
+  border-top: none;
+}
