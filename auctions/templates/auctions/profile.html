@@ -1,63 +1,56 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-
-<div class="container-lg ms-md-3">
-    <h2>
-        Profile
-    </h2>
-    <div class="d-flex flex-md-column">
-        <div class="row gap-3">
-            <div class="col-md-3 d-flex justify-content-center">
-                <img src="https://snapynow.com/wp-content/uploads/2024/05/no-dp-pic_23.webp" alt="User image" class="img-fluid rounded" style="width: auto; max-height: 300px; object-fit: cover;" >
-            </div>
-
-            <div class="col-md-4 mt-md-3 mt-2 ms-4 ms-md-0">
-                <p class="fs-5"> Username: <span class="text-primary fw-bold">{{ request.user.username }}</span></p>
-                <p class="fs-5">Email: {{ request.user.email }}</p>
-                <p class="fs-5">Total Listings: {{total_listings}}</p>
-                <p class="fs-5">Total Bids Won: {{total_bids_won}}</p>
-            </div>
+<div class="container-lg profile-page mt-3 ms-md-3">
+    <h2 class="mb-4">Profile</h2>
+    
+    <div class="row align-items-center mb-5">
+        <div class="col-md-3 text-center">
+            <img src="https://snapynow.com/wp-content/uploads/2024/05/no-dp-pic_23.webp" 
+                 alt="User image" 
+                 class="img-fluid rounded profile-img">
+        </div>
+        <div class="col-md-6">
+            <p class="fs-5">Username: <span class="text-primary fw-bold">{{ request.user.username }}</span></p>
+            <p class="fs-5">Email: {{ request.user.email }}</p>
+            <p class="fs-5">Total Listings: {{total_listings}}</p>
+            <p class="fs-5">Total Bids Won: {{total_bids_won}}</p>
         </div>
     </div>
 
-    <div class="row">
-        <h3 class="mt-5">My Listings</h3>
-        <div class="col-md-6 ms-md-3 mt-3">
-            {% for listing in listings %}
-                <div class="row shadow rounded mb-2 bg-white p-2 gx-3">
-                    <div class="col-auto">
-                        <img src="{{ listing.image }}" class="img-fluid rounded" style="max-width: 150px; max-height: 150px; object-fit: cover;">
-                    </div>
-                    <div class="col">
-                        <div class="d-flex flex-column p-2">
-                            <p class="fw-bold">{{ listing.title }}</p>
-                            {% if listing.is_active %}
-                                <p class="text-success">Active</p>
-                            {% else %}
-                                <p class="text-danger">Ended</p>
-                            {% endif %}
+    <h3 class="mb-3">My Listings</h3>
+    <div class="row listings-container g-3">
+        {% for listing in listings %}
+            <div class="col-md-6">
+                <div class="listing-item shadow rounded p-3">
+                    <div class="d-flex flex-column flex-md-row gap-3">
+                        <img src="{{ listing.image }}" alt="{{ listing.title }}" class="listing-img">
 
-                            {% if listing.is_active %}
-                                <p>Current Bid: <span class="text-success">${{listing.highest_bid}}</span></p>
-                            {% else %}
-                                <p>Winner: <span class="text-primary">{{listing.winner}}</span></p>
-                            {% endif %}
+                        <div class="flex-grow-1 d-flex flex-column justify-content-between">
+                            <div>
+                                <p class="fw-bold fs-5">{{ listing.title }}</p>
+                                {% if listing.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                    <p class="mt-1">Current Bid: <span class="text-success">${{ listing.highest_bid }}</span></p>
+                                {% else %}
+                                    <span class="badge bg-danger">Ended</span>
+                                    <p class="mt-1">Winner: <span class="text-primary">{{ listing.winner }}</span></p>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex flex-md-column flex-row gap-2 mt-2 mt-md-0">
+                                <a href="{% url 'product' listing.id %}" class="btn btn-gradient w-100">View</a>
+                                <form action="{% url 'profile' %}" method="post" class="w-100">
+                                    {% csrf_token %}
+                                    <button type="submit" name="action" value="delete" class="btn btn-outline-danger w-100">Delete</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                    
-                    
-                    <div class=" col-12 col-md-auto mt-2 mt-md-0 d-flex flex-md-column gap-2 justify-content-md-evenly justify-content-end ">
-                        <a href="" class="btn btn-outline-primary">View</a>
-                        <form action="">
-                            {% csrf_token %}
-                            <button type="submit" name="action" value="delete" class="btn btn-outline-danger">Delete</button>
-                        </form>
-                    </div>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% empty %}
+            <p class="text-muted">You have no listings yet.</p>
+        {% endfor %}
     </div>
 </div>
-
 {% endblock %}

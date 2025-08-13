@@ -26,9 +26,7 @@ SECRET_KEY = '6ps8j!crjgrxt34cqbqn7x&b3y%(fny8k8nh21+qa)%ws3fh!q'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "65ea-2407-5200-400-3756-c8a9-ddd5-5d77-d726.ngrok-free.app",
-    "localhost",
-    "127.0.0.1"
+
 ]
 
 
@@ -124,7 +122,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://65ea-2407-5200-400-3756-c8a9-ddd5-5d77-d726.ngrok-free.app",  # replace with your actual ngrok domain
-]
